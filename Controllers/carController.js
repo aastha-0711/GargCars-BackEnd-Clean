@@ -1,5 +1,5 @@
 const Car = require("../Models/carModel");
-exports.getAllcars = async (req, res) => {
+exports.getAllCars = async (req, res) => {
   try {
     const cars = await Car.find();
     res.send(cars);

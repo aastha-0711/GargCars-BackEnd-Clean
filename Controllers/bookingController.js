@@ -1,57 +1,58 @@
 require("dotenv").config();
-const { v4: uuidv4 } = require("uuid");
-const stripe = require("stripe")(process.env.STRIPE_KEY);
+const Razorpay = require("razorpay");
 const Booking = require("../Models/bookingModel");
 const Car = require("../Models/carModel");
 
-exports.bookCar = async (req, res) => {
-  const { token } = req.body;
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
+exports.bookCar = async (req, res) => {
   try {
-    const customer = await stripe.customers.create({
-      email: token.email,
-      source: token.id,
+    const {
+      user,
+      car,
+      totalMins,
+      totalAmount,
+      driverRequired,
+      bookedTimeSlots,
+    } = req.body;
+
+    // Create Razorpay order
+    const order = await razorpay.orders.create({
+      amount: totalAmount * 100,
+      currency: "INR",
+      receipt: `receipt_order_${Date.now()}`,
     });
 
-    const payment = await stripe.charges.create(
-      {
-        amount: req.body.totalAmount * 100,
-        currency: "pkr", // you can change to "inr" or other if needed
-        customer: customer.id,
-        receipt_email: token.email,
-        description: "Software development services",
+    res.json({
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID,
+      bookingDetails: {
+        user,
+        car,
+        totalMins,
+        totalAmount,
+        driverRequired,
+        bookedTimeSlots,
       },
-      {
-        idempotencyKey: uuidv4(),
-      }
-    );
-
-    if (payment) {
-      req.body.transactionId = payment.source.id;
-
-      const newBooking = new Booking(req.body);
-      await newBooking.save();
-
-      const car = await Car.findById(req.body.car);
-      car.bookedTimeSlots.push(req.body.bookedTimeSlots);
-      await car.save();
-
-      res.send("Your booking is successful");
-    } else {
-      return res.status(400).json({ error: "Payment failed" });
-    }
+    });
   } catch (error) {
-    console.error("Booking error:", error);
-    return res.status(400).json(error);
+    console.error("Razorpay booking error:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 };
 
+// ✅ This is missing — add this
 exports.getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find().populate("car").populate("user");
     res.send(bookings);
   } catch (error) {
     console.error("Fetching bookings failed:", error);
-    return res.status(400).json(error);
+    res.status(400).json(error);
   }
 };
