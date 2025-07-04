@@ -5,8 +5,8 @@ This is the **clean backend version** of the GargCars project. It contains only 
 ## 🔧 Features
 
 - MongoDB database integration
-- REST APIs for car booking, user management, and Stripe payment handling
-- Stripe integration for payment processing
+- REST APIs for car booking, user management, and RazorPay payment handling
+- RazorPay integration for payment processing
 - Models and routes for cars and bookings
 - Secure and minimal production-ready codebase
 
@@ -16,7 +16,7 @@ This is the **clean backend version** of the GargCars project. It contains only 
 - Express.js
 - MongoDB
 - Mongoose
-- Stripe
+- RazorPay
 
 ## 🚀 Getting Started
 
