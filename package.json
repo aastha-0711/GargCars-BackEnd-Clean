@@ -27,10 +27,12 @@
   },
   "homepage": "https://github.com/aastha-0711/GargCars-Main#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^6.13.8",
     "nodemon": "^3.1.10",
     "paytmchecksum": "^1.5.1",

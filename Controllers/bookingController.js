@@ -46,7 +46,6 @@ exports.bookCar = async (req, res) => {
   }
 };
 
-// ✅ This is missing — add this
 exports.getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find().populate("car").populate("user");
